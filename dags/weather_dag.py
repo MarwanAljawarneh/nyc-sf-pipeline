@@ -1,8 +1,7 @@
 from datetime import datetime
 from airflow import DAG
-from airflow.operators.python import PythonOperator
+from airflow.providers.standard.operators.python import PythonOperator
 import sys
-import os
 
 sys.path.insert(0, '/opt/airflow')
 
