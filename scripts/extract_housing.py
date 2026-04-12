@@ -29,7 +29,6 @@ def extract_housing():
             logger.warning(f"No data found for {city_name}")
             continue
         
-        print(df.head(10))
         date_columns = [col for col in df.columns if col.startswith("20")]
         latest_date = date_columns[-1]
         latest_rent = row[latest_date][0]
