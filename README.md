@@ -94,7 +94,28 @@ docker-compose up -d
 
 ## Dashboard
 
-Coming soon — live Streamlit dashboard showing NYC vs SF comparison across all three data sources.
+A live interactive dashboard is available here:
+
+👉 https://nyc-sf-pipeline.streamlit.app/
+
+The dashboard visualizes key comparisons between New York City and San Francisco across:
+
+- 🌤️ Daily weather (temperature & precipitation)
+- 🏠 Median rent trends over time
+- 📈 Cost of living (CPI) trends
+
+Built with Streamlit and connected directly to a PostgreSQL warehouse (Supabase), the dashboard reflects data processed through the full ELT pipeline.
+
+### Features
+- Real-time data updates from scheduled Airflow pipelines
+- Clean side-by-side city comparison
+- Interactive time-series visualizations
+- Cached queries for fast performance
+
+### Tech Highlights
+- Streamlit for frontend visualization
+- Polars for fast in-memory data processing
+- PostgreSQL (Supabase) as the serving layer
 
 ## Author
 
