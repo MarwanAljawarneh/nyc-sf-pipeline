@@ -4,9 +4,31 @@ import polars as pl
 import streamlit as st
 from dotenv import load_dotenv
 
+# Load .env for local development
 load_dotenv()
 
-# --- Config ---
+# --- Config Helper ---
+def get_config(key: str):
+    value = None
+
+    # Try Streamlit secrets safely
+    try:
+        if key in st.secrets:
+            value = st.secrets[key]
+    except Exception:
+        # No secrets.toml locally → ignore
+        pass
+
+    # Fallback to environment (.env or system env)
+    if not value:
+        value = os.getenv(key)
+
+    if not value:
+        raise ValueError(f"Missing required config: {key}")
+
+    return value
+
+# --- Streamlit Page Config ---
 st.set_page_config(
     page_title="NYC vs SF Dashboard",
     page_icon="🌆",
@@ -21,15 +43,15 @@ CITY_LABELS = {
 # --- Database ---
 @st.cache_resource
 def get_connection():
-    return psycopg2.connect(os.getenv("SUPABASE_DB_URL"))
+    return psycopg2.connect(get_config("SUPABASE_DB_URL"))
 
 @st.cache_data(ttl=3600)
 def query(sql):
     conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute(sql)
-    columns = [desc[0] for desc in cursor.description]
-    rows = cursor.fetchall()
+    with conn.cursor() as cursor:
+        cursor.execute(sql)
+        columns = [desc[0] for desc in cursor.description]
+        rows = cursor.fetchall()
     return pl.DataFrame(rows, schema=columns, orient="row")
 
 # --- Header ---
@@ -77,6 +99,7 @@ housing = housing.with_columns(
     pl.col("city").replace(CITY_LABELS),
     pl.col("median_rent").cast(pl.Float64)
 )
+
 housing_pivot = housing.pivot(index="date", on="city", values="median_rent")
 
 st.line_chart(housing_pivot, x="date", y=["New York City", "San Francisco"])
@@ -96,6 +119,7 @@ cpi = cpi.with_columns(
     pl.col("city").replace(CITY_LABELS),
     pl.col("cpi").cast(pl.Float64)
 )
+
 cpi_pivot = cpi.pivot(
     index="date", on="city", values="cpi"
 ).with_columns([
