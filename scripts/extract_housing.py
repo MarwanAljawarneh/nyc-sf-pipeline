@@ -14,7 +14,7 @@ cities = {
 def extract_housing():
     logger.info("Downloading Zillow ZORI CSV...")
 
-    response = requests.get(ZORI_URL)
+    response = requests.get(ZORI_URL, timeout=30)
     response.raise_for_status()
 
     df = pl.read_csv(StringIO(response.text))

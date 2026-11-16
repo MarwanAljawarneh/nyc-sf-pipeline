@@ -30,7 +30,7 @@ def extract_cpi():
     }
 
     logger.info("Fetching CPI data from BLS API...")
-    response = requests.post(BLS_API_URL, json=payload)
+    response = requests.post(BLS_API_URL, json=payload, timeout=15)
     response.raise_for_status()
     data = response.json()
 
