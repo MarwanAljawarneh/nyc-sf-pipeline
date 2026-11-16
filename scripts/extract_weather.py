@@ -18,7 +18,7 @@ def extract_weather():
             "latitude": coords["latitude"],
             "longitude": coords["longitude"],
             "daily": "temperature_2m_max,temperature_2m_min,precipitation_sum",
-            "timezone": "America/New_York",
+            "timezone": "America/New_York" if city == "nyc" else "America/Los_Angeles",
             "forecast_days": 1,
         }
 
