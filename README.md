@@ -120,3 +120,25 @@ Built with Streamlit and connected directly to a PostgreSQL warehouse (Supabase)
 ## Author
 
 Marwan Aljawarneh — [LinkedIn](https://www.linkedin.com/in/marwan-aljawarneh/)
+## ETL code organization
+
+Reusable extraction and loading functions live in the `nyc_sf_pipeline/` Python
+package (`weather.py`, `cpi.py`, and `housing.py`). The `scripts/` files
+are small compatibility entry points so existing Airflow DAGs can keep their
+current imports and task IDs.
+
+Run an extractor locally from the project root with:
+
+```bash
+uv run python -m scripts.extract_weather
+uv run python -m scripts.extract_cpi
+uv run python -m scripts.extract_housing
+```
+
+Each loader still requires `SUPABASE_DB_URL` and uses an atomic transaction
+for the whole batch. The existing GitHub Actions workflow uses mocked API and
+database tests and does not write to your production database.
+
+This is a Python module/package reorganization, not a change to Airflow deployment
+or its mount configuration. Ensure the repository root is available on Airflow's
+Python path (as with the existing `/opt/airflow` setup).
